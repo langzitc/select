@@ -1,35 +1,33 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import classnames from 'classnames'
 import AutosizeInput from 'react-input-autosize'
-import styles from '../style.scss'
+import styles from '../style.module.scss'
 class Input extends Component {
 	constructor (props) {
 		super(props);
-    }
+	}
+	static propTypes = {
+		inputRef: PropTypes.func,
+		autoFocus: PropTypes.bool,
+		inputStyle: PropTypes.object,
+		onChange: PropTypes.func,
+		value: PropTypes.any
+	}
     static defaultProps = {
-        autoFocus: true,
+		autoFocus: true,
+		inputRef: React.createRef(),
         inputStyle: {
             border: "none"
-        }
+		},
+		onChange: ()=>{}
     }
-	state = {
-		inputValue: '',
-	};    
-	updateInputValue = (event) => {
-		const value = event.target.value;
-		this.setState(state=>{
-			state.inputValue = value;
-			return state;
-		})
-	};
 	render () {
 		return (
             <AutosizeInput
                 {...this.props}
                 className={styles.input}
-                value={this.state.inputValue}
-                onChange={this.updateInputValue.bind(this)}
+                value={this.props.value}
+                onChange={this.props.onChange.bind(this)}
             />
 		);
 	}

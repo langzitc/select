@@ -3,9 +3,6 @@ $placeholderColor: #777;
 $hovercolor: #bae7ff;
 $activecolor: #40a9ff;
 $activefontcolor: #fff;
-:global{
-
-}
 .wrap{
     display: inline-block;
     min-width: 200px;
@@ -18,12 +15,17 @@ $activefontcolor: #fff;
     min-height: 38px;
     border: 1px solid $bdcolor;
     border-radius: 3px;
-    padding-right: 100px;
-    padding-left: 15px;
+    padding: 0 100px 0 15px;
     box-sizing: border-box;    
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    cursor: pointer;
+    &.showclear:hover{
+        .clear{
+            display: flex;
+        }
+    }    
 }
 .icon{
     position: absolute;
@@ -58,7 +60,7 @@ $activefontcolor: #fff;
 }
 .checkall{
     @extend .icon;
-    right: 80px;
+    right: 0px;
     &:hover{
         color: #000;
         cursor: pointer;
@@ -67,11 +69,13 @@ $activefontcolor: #fff;
 .placeholder{
     color: $placeholderColor;
     font-size: 12px;
+    user-select: none;
 }
 .clear{
     @extend .icon;
     right: 40px;
     transform: scale(.7);
+    display: none;
     &:hover{
         color: #000;
         cursor: pointer;
@@ -83,13 +87,24 @@ $activefontcolor: #fff;
         outline: none;
     }
 }
+.loading{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    color: $placeholderColor;
+    text-align: center;
+    font-size: 12px;
+}
 .menu{
     position: absolute;
     width: 100%;
     overflow: hidden;
     height: 0;
     left: 0;
-    top: 44px;
+    background: #fff;
+    z-index: 11;
+    top: 100%;
     &.showMenu{
         max-height: 200px;
         min-height: 40px;
@@ -105,6 +120,7 @@ $activefontcolor: #fff;
     transition: all .2s ease-in-out;
     transform: translateY(-100px);
     border-radius: 3px;
+    margin-top: 2px;
 }
 .checkicon{
     transition: opacity .2s linear;
@@ -145,6 +161,14 @@ $activefontcolor: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 100px;
+    width: auto;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 5px;
+    margin-right: 5px;
     &:hover{
         cursor: pointer;
     }
@@ -154,11 +178,26 @@ $activefontcolor: #fff;
     }
     &.single{
         border: none;
+        padding: 2px 5px 2px 0;
+        color: #000;
         i{
             display: none;
         }
     }
 }
-.checkItem + .checkItem{
-    margin-left: 5px;
+.checkwrap{
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding: 5px 0 0 0;
+}
+.tips{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $placeholderColor;
+    font-size: 14px;
 }
