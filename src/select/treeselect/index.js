@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames/bind'
-import '../icon/iconfont.css'
-import styles from './style.module.scss'
+import styles from '../style.module.scss'
 import { SelectContext } from '../context'
 import Menu from './menu'
 import { TreeListItem, Placeholder, ClearButton, CheckButton, DownButton } from '../components'
@@ -13,7 +12,7 @@ export default class TreeSelect extends Component {
 		super(props);
     }
     static propTypes = {
-        allowClear: PropTypes.bool,
+        clear: PropTypes.bool,
         autoClearSearchValue: PropTypes.bool,
         defaultValue: PropTypes.oneOfType([
             PropTypes.string,
@@ -31,12 +30,14 @@ export default class TreeSelect extends Component {
 		data: PropTypes.array,
 		noSearchResultText: PropTypes.string,
 		isShowCheckAll: PropTypes.bool,
+		isSearchAutoSelect: PropTypes.bool,
 		onChange: PropTypes.func,
 		onCheckAll: PropTypes.func,
     }
     static defaultProps = {
-        allowClear: false,
-        autoClearSearchValue: true,
+        clear: false,
+		autoClearSearchValue: true,
+		isSearchAutoSelect: false,
         defaultValue: '',
         disabled: false,
         isFilter: false,
@@ -278,7 +279,7 @@ export default class TreeSelect extends Component {
         }
         return (
 			<div className={classnames(styles.wrap)} ref={this.SelectRef}>
-					<div className={cx({wrapinner: true,showclear: this.state.selectList.length !== 0})} onClick={this.handleWrapClick}>
+					<div className={cx({wrapinner: true,showclear: this.props.clear&&this.state.selectList.length !== 0})} onClick={this.handleWrapClick}>
 						<div className={styles.checkwrap}>
 						{
 							this.state.selectList.map(({label,value})=>{
@@ -296,7 +297,7 @@ export default class TreeSelect extends Component {
 							this.state.selectList.length === 0 ? <Placeholder placeholder={this.props.placeholder} /> : null
 						}
 						{
-							this.state.selectList.length === 0 ? null : 
+							this.props.clear&&this.state.selectList.length === 0 ? null : 
 							<ClearButton ref={this.clearRef} handleRemoveAll={this.handleRemoveAll}></ClearButton>								
 						}	
 						{

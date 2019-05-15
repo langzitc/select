@@ -18,7 +18,7 @@ class Menu extends Component {
                             {
                                 isFilter ? <Search value={searchKeyword} onChange={onInputChange} placeholder={searchPlaceholder}/> : []
                             }
-                            <div className={styles.menuwrapOuter}>
+                            <div className={styles['menuwrap-outer']}>
                                 <div className={cx({menuwrap:true})}>
                                     {
                                         data.length&&data[0].show ? data.map((el)=>{

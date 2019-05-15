@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import classnames from 'classnames/bind'
-import '../icon/iconfont.css'
 import styles from '../style.module.scss'
 import Input from './input'
 import Menu from './menu'
@@ -14,12 +13,13 @@ class Select extends Component {
 		super(props);	
 	}
 	static propTypes = {
+		clear: PropTypes.bool,
 		isFilter: PropTypes.bool,
 		placeholder: PropTypes.string,
-		isMultiple: PropTypes.bool,
-		isAsync: PropTypes.bool,
+		multiple: PropTypes.bool,
+		async: PropTypes.bool,
 		isShowCheckAll: PropTypes.bool,
-		isFilterAutoSelect: PropTypes.bool,
+		isSearchAutoSelect: PropTypes.bool,
 		isSelectClose: PropTypes.bool,
 		action: PropTypes.func,
 		data: PropTypes.array,
@@ -38,11 +38,12 @@ class Select extends Component {
 
 	}
 	static defaultProps = {
+		clear: true,
 		isFilter: false,
-		isMultiple: false,
-		isAsync: false,
+		multiple: false,
+		async: false,
 		isShowCheckAll: false,
-		isFilterAutoSelect: false,
+		isSearchAutoSelect: false,
 		action: null,
 		data: [],
 		defaultValue: '',
@@ -67,7 +68,7 @@ class Select extends Component {
 		loading: false
 	}
 	get data() {
-		return this.props.isAsync ? this.state.data : (this.props.isFilter ? this.filter(this.props.data) : this.props.data);
+		return this.props.async ? this.state.data : (this.props.isFilter ? this.filter(this.props.data) : this.props.data);
 	}
 	filter = (data)=>{
 		return data.filter(e=>{
@@ -76,7 +77,7 @@ class Select extends Component {
 	}
 	triggerChange = ()=>{
 		let values = [],list = [],state = this.state;
-		if(this.props.isMultiple){
+		if(this.props.multiple){
 			values = state.selectValues;
 			list = state.selectList;
 		}else{
@@ -122,7 +123,7 @@ class Select extends Component {
 	}
 	handleCheckChange = (value,event)=>{
 		let selectValues;
-		if(this.props.isMultiple){
+		if(this.props.multiple){
 			selectValues = Array.from(this.state.selectValues);
 			if(selectValues.includes(value)){
 				let index = selectValues.findIndex(e=>e === value);
@@ -188,7 +189,7 @@ class Select extends Component {
 			data: [],
 			searchKeyword
 		},()=>{
-			if(this.props.isAsync){
+			if(this.props.async){
 				throttle(this.loadData(),300);
 			}
 		});
@@ -199,9 +200,18 @@ class Select extends Component {
 			...state,
 			loading: true
 		});
-		this.props.action().then(data=>{
+		this.props.action(this.state.searchKeyword).then(data=>{
+			let selectValues = [],selectList = Array.from(this.state.selectList);
+			if(this.props.isSearchAutoSelect){
+				selectValues = data.map(e=>e.value);
+			}else{
+				selectList = Array.from(this.state.selectList);
+				selectValues = Array.from(this.state.selectValues);
+			}
 			this.setState({
 				...state,
+				selectValues,
+				selectList,
 				loading: false,
 				data
 			});		
@@ -250,7 +260,7 @@ class Select extends Component {
 			loadingText: this.props.loadingText
 		}
 		const arr = [];
-		if(this.props.isFilter||this.props.isAsync){
+		if(this.props.isFilter||this.props.async){
 			arr.push(<Input 
 				value={this.state.searchKeyword} 
 				onChange={this.handleInputChange} 
@@ -263,7 +273,7 @@ class Select extends Component {
 				<Placeholder placeholder={this.props.placeholder} key={'placeholder'} />
 			);
 		}
-		if(this.props.isShowCheckAll&&this.props.isMultiple&&this.state.show){
+		if(this.props.isShowCheckAll&&this.props.multiple&&this.state.show){
 			arr.push(	
 				<CheckButton ref={this.checkRef} handleCheckAll={this.handleCheckAll} key={'checkall'} />		
 			);			
@@ -272,20 +282,20 @@ class Select extends Component {
 				<DownButton key={'down'} ref={this.downRef} />			
 			)			
 		}
-		if(this.state.selectValues.length){
+		if(this.state.selectValues.length&&this.props.clear){
 			arr.push(
 				<ClearButton ref={this.clearRef} key={'clearall'} handleRemoveAll={this.handleRemoveAll} />	
 			);
 		}
 		return (
 			<div className={classnames(styles.wrap)} ref={this.SelectRef}>
-					<div className={cx({wrapinner: true,showclear: this.state.selectList.length !== 0})} onClick={this.handleWrapClick}>
+					<div className={cx({wrapinner: true,showclear: this.props.clear&&this.state.selectList.length !== 0})} onClick={this.handleWrapClick}>
 						<div className={styles.checkwrap}>
 						{
 							this.state.selectList.map((e,index)=>{
 								return <SelectListItem 
 									key={e.value}
-									single={!this.props.isMultiple}
+									single={!this.props.multiple}
 									handleCheckChange={this.handleCheckChange}
 									label={e.label}
 									value={e.value}

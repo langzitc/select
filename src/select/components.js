@@ -46,7 +46,7 @@ const ClearButton = React.forwardRef((props,ref)=>{
 function SelectListItem(props){
     return (
         <span className={cx({
-            checkItem: true,
+            checkitem: true,
             disabled: false,
             single: props.single
         })}
@@ -63,7 +63,7 @@ function SelectListItem(props){
 function TreeListItem(props){
     return (
         <span className={cx({
-            checkItem: true,
+            checkitem: true,
             disabled: false,
             single: props.single
         })}

@@ -88,7 +88,7 @@ function App() {
         <div style={{marginTop: "30px"}}>
                 <Select
                 isFilter={true}
-                isMultiple
+                multiple
                 defaultValue={[1]}
                 data={[{
                     label: '美国',
@@ -106,8 +106,8 @@ function App() {
         <div style={{marginTop: "30px"}}>
                 <Select
                 isFilter={true}
-                isMultiple
-                isAsync
+                multiple
+                async
                 action={action}
                 >
                 </Select>  
@@ -115,8 +115,8 @@ function App() {
         <div style={{marginTop: "30px"}}>
                 <Select
                 isFilter={true}
-                isMultiple
-                isAsync
+                multiple
+                async
                 isShowCheckAll
                 action={action}
                 >

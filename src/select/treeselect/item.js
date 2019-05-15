@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import classnames from 'classnames/bind'
-import styles from './style.module.scss'
+import styles from '../style.module.scss'
 import { SelectContext } from '../context'
 import { CheckBox } from '../components'
 const cx = classnames.bind(styles);
