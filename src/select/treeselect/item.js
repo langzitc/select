@@ -45,9 +45,9 @@ class Item extends Component {
                             {label}
                         </div>
                         {
-                            expand ? children.map(e=>{
-                                return <Item key={e.value} data={e}></Item>
-                            }) : []
+                            expand&&children.some(e=>e.show) ? children.map(e=>{
+                                return e.show ?  <Item key={e.value} data={e}></Item> : null
+                            }) : null
                         }
                     </div>                    
                 )}

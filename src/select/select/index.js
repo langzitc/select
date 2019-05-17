@@ -11,6 +11,17 @@ const cx = classnames.bind(styles);
 class Select extends Component {
 	constructor (props) {
 		super(props);	
+		let selectValues = this.props.defaultValue ? (Array.isArray(this.props.defaultValue) ? this.props.defaultValue : [this.props.defaultValue]) : [];
+		let selectList = props.data ? props.data.filter(e=>selectValues.includes(e.value)) : [];
+		this.state = {
+			show: false,
+			searchKeyword: '',
+			loading: false,
+			tempData: props.data,
+			selectValues,
+			selectList,
+			data: props.data			
+		}			
 	}
 	static propTypes = {
 		clear: PropTypes.bool,
@@ -59,17 +70,6 @@ class Select extends Component {
 	SelectRef = React.createRef();
 	MenuRef = React.createRef();	
 	input = null;
-	state = {
-		show: false,
-		selectList: [],
-		selectValues: [],
-		searchKeyword: '',
-		data: [],
-		loading: false
-	}
-	get data() {
-		return this.props.async ? this.state.data : (this.props.isFilter ? this.filter(this.props.data) : this.props.data);
-	}
 	filter = (data)=>{
 		return data.filter(e=>{
 			return e.label.includes(this.state.searchKeyword) || e.value.toString().includes(this.state.searchKeyword);
@@ -95,8 +95,8 @@ class Select extends Component {
 		})
 	}
 	handleCheckAll = ()=>{
-		let is = this.state.selectList.length === this.data.length;
-		let selectList = is ? [] : Array.from(this.data);
+		let is = this.state.selectList.length === this.state.data.length;
+		let selectList = is ? [] : Array.from(this.state.data);
 		let selectValues = selectList.map(e=>e.value);
 		this.setState(state=>{
 			return {
@@ -138,7 +138,7 @@ class Select extends Component {
         this.setState(state=>{
 			let selectList = [];
 			selectValues.forEach(e=>{
-				selectList.push(this.data.find(el=>el.value===e));
+				selectList.push(state.data.find(el=>el.value===e));
 			})
             return {
                 ...state,
@@ -220,18 +220,21 @@ class Select extends Component {
 	inputRef = element=>{
 		this.input = element;
 	}
-	componentDidMount () {
-		if(this.props.defaultValue){
-			let selectValues = Array.isArray(this.props.defaultValue) ? this.props.defaultValue : [this.props.defaultValue];
-			let selectList = this.data.filter(e=>selectValues.includes(e.value));
-			this.setState(state=>{
-				return {
-					...state,
-					selectList,
-					selectValues
-				}
-			});
-		}			
+	static getDerivedStateFromProps (nextProps,prevState) {
+		let tempData = prevState.tempData,
+		isDataChange = JSON.stringify(tempData) !== JSON.stringify(nextProps.data);
+		if(isDataChange){
+			let data = nextProps.data;
+			tempData = data;
+			return {
+				...prevState,
+				data,
+				tempData
+			}			
+		}
+		return null;
+	}	
+	componentDidMount () {	
 		document.body.addEventListener('click',event=>{
 			let el = event.target;
 			if(this.SelectRef.current&&!this.SelectRef.current.contains(el)){
@@ -248,7 +251,7 @@ class Select extends Component {
 		const provider = {
 			selectList: this.state.selectList,
 			selectValues: this.state.selectValues,
-			data: this.data,
+			data: this.props.isFilter ? this.filter(this.state.data) : this.state.data,
 			handleCheckChange: this.handleCheckChange,
 			show: this.state.show,
 			toggleMenu: this.handleClick,
@@ -301,7 +304,7 @@ class Select extends Component {
 									value={e.value}
 								/>
 							})
-						}						
+						}					
 						</div>
 						{arr}												
 					</div>

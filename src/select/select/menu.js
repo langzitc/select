@@ -5,9 +5,6 @@ import { SelectContext } from '../context'
 import { Item, Tips, Loading } from '../components'
 const cx = classnames.bind(styles);
 class Menu extends Component {
-    constructor (props) {
-        super(props);
-    } 
     render () {       
         return (
             <SelectContext.Consumer>

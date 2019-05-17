@@ -7,9 +7,37 @@ import Menu from './menu'
 import { TreeListItem, Placeholder, ClearButton, CheckButton, DownButton } from '../components'
 import { format, filter } from '../util'
 const cx = classnames.bind(styles);
+const fn = (data,selectValues)=>{
+	return data.map(e=>{
+		let obj = {
+			...e,
+			selected: selectValues.includes(e.value)						
+		};
+		if(obj.children&&obj.children.length){
+			obj.children = fn(obj.children,selectValues);
+		}
+		return obj;
+	})
+}
 export default class TreeSelect extends Component {
     constructor (props){
 		super(props);
+		let selectList = [],selectValues = [],data = [];
+		if(props.defaultValue){
+			selectValues = Array.isArray(props.defaultValue) ? props.defaultValue : [props.defaultValue];
+			data = props.data&&props.data.length ? fn(format(props.data),selectValues) : [];
+			selectList = data.filter(e=>selectValues.includes(e.value));
+		}			
+		this.state = {
+			show: false,
+			loading: false,
+			selectValues,
+			selectList,
+			data,
+			temp: props.data ? props.data : null,
+			isCheckAll: false,
+			searchKeyword: ''
+		}
     }
     static propTypes = {
         clear: PropTypes.bool,
@@ -51,27 +79,17 @@ export default class TreeSelect extends Component {
 		onChange: ()=>{},
 		onCheckAll: ()=>{},
 	}
-	// static getDerivedStateFromProps (nextProps,prevState) {
-	// 	if(JSON.stringify(nextProps.data)===JSON.stringify(prevState.data)){
-	// 		return null;
-	// 	}
-	// 	return {
-	// 		...prevState,
-	// 		data: format(nextProps.data)
-	// 	}
-	// }	
-	// componentWillReceiveProps () {
-	// 	console.log(23)
-	// }
-    state = {
-        show: false,
-        loading: false,
-        selectValues: [],
-		selectList: [],
-		data: format(Array.from(this.props.data)||[]),
-		isCheckAll: false,
-		searchKeyword: ''
-	}
+	static getDerivedStateFromProps (nextProps,prevState) {
+		if(JSON.stringify(nextProps.data)===JSON.stringify(prevState.temp)||!nextProps.data){
+			return null;
+		}
+		let temp = nextProps.data;
+		return {
+			...prevState,
+			temp,
+			data: fn(format(temp,prevState.selectValues))
+		}
+	}	
 	clearRef = React.createRef();
 	downRef = React.createRef();	
 	SelectRef = React.createRef();
@@ -219,39 +237,24 @@ export default class TreeSelect extends Component {
 
 		}else{
 			this.setState(state=>{
+				let {data,selectValues,selectList} = filter(state.data,searchKeyword,this.props.isSearchAutoSelect);
+				let newList = Array.from(state.selectList);
+				selectList.forEach(e=>{
+					if(!newList.some(el=>el.value === e.value)){
+						newList.push(e);
+					}
+				})
 				return {
 					...state,
 					searchKeyword,
-					data: filter(state.data,searchKeyword)
+					selectValues: Array.from(new Set([...selectValues,...state.selectValues])),
+					selectList: newList,
+					data
 				}
-			});			
+			});		
 		}
 	}
-	componentDidMount () {
-		if(this.props.defaultValue){
-			let selectValues = Array.isArray(this.props.defaultValue) ? this.props.defaultValue : [this.props.defaultValue];
-			let selectList = this.state.data.filter(e=>selectValues.includes(e.value));
-			let fn = (data)=>{
-				return data.map(e=>{
-					let obj = {
-						...e,
-						selected: selectValues.includes(e.value)						
-					};
-					if(obj.children&&obj.children.length){
-						obj.children = fn(obj.children);
-					}
-					return obj;
-				})
-			}
-			this.setState(state=>{
-				return {
-					...state,
-					selectList,
-					selectValues,
-					data: fn(this.state.data)
-				}
-			});
-		}			
+	componentDidMount () {		
 		document.body.addEventListener('click',event=>{
 			let el = event.target;
 			if(this.SelectRef.current&&!this.SelectRef.current.contains(el)){

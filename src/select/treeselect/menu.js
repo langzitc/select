@@ -21,7 +21,7 @@ class Menu extends Component {
                             <div className={styles['menuwrap-outer']}>
                                 <div className={cx({menuwrap:true})}>
                                     {
-                                        data.length&&data[0].show ? data.map((el)=>{
+                                        data.length&&data.some(e=>e.show) ? data.map(el=>{
                                             return (
                                                 el.show ? <Item key={el.value} data={el}></Item> : null
                                             )

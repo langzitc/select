@@ -46,15 +46,29 @@ export function format(data,isloading) {
 		return e;
 	})
 }
-export function filter(data,keyword) {
-	return data.map(e=>{
-		let show = JSON.stringify(e).includes(keyword),obj = {...e};
-		if(e.children&&e.children.length){
-			obj.children = filter(e.children,keyword);
-		}
-		return {
-			...obj,
-			show
-		}
-	})
+export function filter(data,keyword,isSearchAutoSelect) {
+	let selectValues = [],selectList = [];
+	function fn(data,keyword,isSearchAutoSelect) {
+		return data.map(e=>{
+			let show = JSON.stringify(e).includes(keyword),obj = {...e};
+			obj.show = show;
+			obj.selected = isSearchAutoSelect&&keyword ? true : false;
+			if(obj.selected){
+				selectValues.push(e.value);
+				selectList.push({
+					...e
+				});
+			}
+			if(e.children&&e.children.length){
+				obj.children = fn(e.children,keyword,isSearchAutoSelect);
+				obj.expand = show;
+			}		
+			return obj;
+		})
+	}
+	return {
+		selectValues,
+		selectList,
+		data: fn(data,keyword,isSearchAutoSelect)
+	}
 }

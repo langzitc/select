@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {Select,TreeSelect} from './select'
 function action () {
     let n = Math.round(Math.random()*50);
@@ -64,11 +64,48 @@ const data = [{
 },{
     label: '事实上',
     value: 8
-}]
+}];
+class Test extends Component{
+    state = {
+        data: [{
+            label: '美国',
+            value: 1,
+        },{
+            label: '法国',
+            value: 2
+        },{
+            label: '英国',
+            value: 3
+        }]
+    }
+    componentDidMount() {
+        setInterval(()=>{
+            let data = Array.from(this.state.data);
+            data.push({
+                label: '事实上',
+                value: data.length+1 
+            })
+            this.setState({
+                data
+            })
+        },1000)          
+    }
+    render () {
+        return (
+            <Select
+            isFilter={true}
+            multiple
+            defaultValue={[1]}
+            data={this.state.data}
+            >
+            </Select>  
+        )
+    }
+}
 function App() { 
   return (
     <div className="App">
-        <div style={{marginTop: "30px"}}>
+        {/* <div style={{marginTop: "30px"}}>
                 <Select
                 isFilter={true}
                 defaultValue={1}
@@ -84,43 +121,28 @@ function App() {
                 }]}
                 >
                 </Select>  
-        </div>    
+        </div>     */}
         <div style={{marginTop: "30px"}}>
-                <Select
-                isFilter={true}
-                multiple
-                defaultValue={[1]}
-                data={[{
-                    label: '美国',
-                    value: 1,
-                },{
-                    label: '法国',
-                    value: 2
-                },{
-                    label: '英国',
-                    value: 3
-                }]}
-                >
-                </Select>  
+            <Test/>
         </div>
         <div style={{marginTop: "30px"}}>
-                <Select
+                {/* <Select
                 isFilter={true}
                 multiple
                 async
                 action={action}
                 >
-                </Select>  
+                </Select>   */}
         </div>
         <div style={{marginTop: "30px"}}>
-                <Select
+                {/* <Select
                 isFilter={true}
                 multiple
                 async
                 isShowCheckAll
                 action={action}
                 >
-                </Select>   
+                </Select>    */}
         </div>
         <div style={{marginTop: "30px"}}>
                 <TreeSelect data={data}>
@@ -135,7 +157,7 @@ function App() {
                 </TreeSelect>  
         </div>
         <div style={{marginTop: "30px"}}>
-                <TreeSelect defaultValue={[1,2,3]} multiple data={data} isShowCheckAll isFilter>
+                <TreeSelect isSearchAutoSelect defaultValue={[1,2,3]} multiple data={data} isShowCheckAll isFilter>
                 </TreeSelect>    
         </div>                                                                                                                                   
     </div>
