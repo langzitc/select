@@ -254,19 +254,23 @@ export default class TreeSelect extends Component {
 			});		
 		}
 	}
+	hideClick = event => {
+		let el = event.target;
+		if(this.SelectRef.current&&!this.SelectRef.current.contains(el)){
+			this.setState(state=>{
+				return {
+					...state,
+					show: false
+				}
+			})
+		}
+	}
 	componentDidMount () {		
-		document.body.addEventListener('click',event=>{
-			let el = event.target;
-			if(this.SelectRef.current&&!this.SelectRef.current.contains(el)){
-				this.setState(state=>{
-					return {
-						...state,
-						show: false
-					}
-				})
-            }
-		})
+		document.body.addEventListener('click',this.hideClick);
 	}        
+	componentWillUnmount () {
+		document.body.removeEventListener('click',this.hideClick);
+	}	
     render () {
         const provider = {
 			show: this.state.show,

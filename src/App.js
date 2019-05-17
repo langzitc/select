@@ -76,7 +76,8 @@ class Test extends Component{
         },{
             label: '英国',
             value: 3
-        }]
+        }],
+        show: true
     }
     componentDidMount() {
         setInterval(()=>{
@@ -88,17 +89,27 @@ class Test extends Component{
             this.setState({
                 data
             })
-        },1000)          
+        },1000)   
+        setTimeout(()=>{
+            this.setState(state=>{
+                return {
+                    ...state,
+                    show: false
+                }
+            })
+        },5000)       
     }
     render () {
         return (
-            <Select
+            <div>
+                {this.state.show ? <Select
             isFilter={true}
             multiple
             defaultValue={[1]}
             data={this.state.data}
             >
-            </Select>  
+            </Select>  : null}
+            </div>
         )
     }
 }
