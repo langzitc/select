@@ -56,4 +56,3 @@ import { TreeSelect } from 'select'
 ReactDom.render(<TreeSelect />)
 ```
 
-test
