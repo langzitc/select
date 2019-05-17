@@ -55,3 +55,5 @@ isSearchAutoSelect    | 搜索自动全选 | boolean | false
 import { TreeSelect } from 'select'
 ReactDom.render(<TreeSelect />)
 ```
+
+test
