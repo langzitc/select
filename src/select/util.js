@@ -46,11 +46,25 @@ export function format(data,isloading) {
 		return e;
 	})
 }
+export function isIncludeKeyword (data, keyword) {
+	let flag = false;
+	for(let key of data){
+		if(key.label.includes(keyword||String(key.value).includes(keyword))){
+			flag = true;
+		}else if(key.children&&key.children.length){
+			flag = isIncludeKeyword(key.children,keyword);
+		}
+		if(flag){
+			break;
+		}
+	}
+	return flag;
+}
 export function filter(data,keyword,isSearchAutoSelect) {
 	let selectValues = [],selectList = [];
 	function fn(data,keyword,isSearchAutoSelect) {
 		return data.map(e=>{
-			let show = JSON.stringify(e).includes(keyword),obj = {...e};
+			let show = isIncludeKeyword([e],keyword),obj = {...e};
 			obj.show = show;
 			obj.selected = isSearchAutoSelect&&keyword ? true : false;
 			if(obj.selected){
